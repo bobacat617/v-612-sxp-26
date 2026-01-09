@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sopha's 2026 Playlist</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #fff8f2; 
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            margin-top: 40px;
+            letter-spacing: 2px;
+            font-size: 2rem;
+            color: #38761d; 
+        }
+
+        .poster-container {
+            display: grid;
+            /* REVERTED: Now items will wrap naturally based on screen size */
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px;
+            max-width: 1000px;
+            width: 90%;
+            margin: 40px 0 150px 0;
+        }
+
+        .poster-item {
+            position: relative;
+            cursor: pointer;
+            aspect-ratio: 1 / 1;
+            transition: transform 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .poster-item:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .poster-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #player-overlay {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #181818;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding: 20px 40px;
+            transform: translateY(110%);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.5s ease;
+            display: flex;
+            flex-direction: row; /* Aligns text and player side-by-side */
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            gap: 40px;
+            z-index: 100;
+        }
+
+        #player-overlay.active {
+            transform: translateY(0);
+        }
+
+        .text-content {
+            flex: 1; 
+            max-width: 400px;
+            text-align: left; /* Aligns text to the left */
+        }
+
+        .text-content p {
+            margin: 0;
+            color: #3d2b1f; /* Your requested text color */
+            font-size: 1.1rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .spotify-container {
+            flex: 1;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* Mobile adjustments to stack them on small screens */
+        @media (max-width: 768px) {
+            #player-overlay{
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+            .text-content {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>A 2026 Playlist for Sopha</h1>
+    
+    <div class="poster-container">
+        
+    <div class="poster-item" onclick="playTrack(event, 'track1')">
+        <img src="images/cover1.jpg" alt="THIS IS FOR">
+    </div>
+    
+    <div class="poster-item" onclick="playTrack(event, 'track2')">
+        <img src="images/cover2.jpg" alt="My Way">
+    </div>
+    
+    <div class="poster-item" onclick="playTrack(event, 'track3')">
+        <img src="images/cover3.jpg" alt="MILLION PLACES">
+    </div>
+    
+    <div class="poster-item" onclick="playTrack(event, 'track4')">
+        <img src="images/cover4.jpg" alt="Good Morning">
+    </div>
+    
+    <div class="poster-item" onclick="playTrack(event, 'track5')">
+        <img src="images/cover5.jpg" alt="For Good">
+    </div>
+    
+    <div class="poster-item" onclick="playTrack(event, 'track6')">
+        <img src="images/cover6.jpg" alt="Usagi no hikari">
+    </div>
+    
+    <div class="poster-item" onclick="playTrack(event, 'track7')">
+        <img src="images/cover7.jpg" alt="Kaiju">
+    </div>
+    
+    <div class="poster-item" onclick="playTrack(event, 'track8')">
+        <img src="images/cover8.jpg" alt="My Body">
+    </div>
+    
+    <div class="poster-item" onclick="playTrack(event, 'track9')">
+        <img src="images/cover9.jpg" alt="ExtraL (feat. Doechii)">
+    </div>
+    
+    </div>
+
+    <div id="player-overlay">
+        <div class="text-content">
+            <p id="song-intro">Select a track...</p>
+        </div>
+        <div class="spotify-container">
+            <iframe 
+                id="spotify-iframe"
+                style="border-radius:12px" 
+                src="" 
+                width="100%" 
+                height="152" 
+                frameBorder="0" 
+                allowfullscreen="" 
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                loading="lazy">
+            </iframe>
+        </div>
+    </div>
+
+    <script>
+        const playerOverlay = document.getElementById('player-overlay');
+        const spotifyIframe = document.getElementById('spotify-iframe');
+        const introEl = document.getElementById('song-intro');
+        
+        const tracks = {"track1": {"id": "track1", "title": "THIS IS FOR", "artist": "Twice", "image": "images/cover1.jpg", "spotify_link": "https://open.spotify.com/track/3598iBWrS4JhJqP5tHlpVK?si=7e0457359dc24448", "intro": "\u5e74\u5ea6Hype Song, \u5fc3\u60c5\u4e0d\u597d\u8bf7\u542c\u8fd9\u9996\uff01\u6c38\u8fdc\u62e5\u62a4Bestie\u7684\u6240\u6709\u51b3\u5b9aI had your back \ud83d\udc95", "color": "#fdf5e6", "spotify_id": "3598iBWrS4JhJqP5tHlpVK"}, "track2": {"id": "track2", "title": "My Way", "artist": "Katseye", "image": "images/cover2.jpg", "spotify_link": "https://open.spotify.com/track/3zUxQpCyUrfEjz6Y07yg4b?si=97afe4cbf9614120", "intro": "2025\u7206\u706b\u5973\u56e2Katseye\uff0c\u5f88\u725b\u7684\u516d\u5973\u795e\u3002\u8fd9\u9996\u5f88teenager\u5f88LA\uff0c\u559c\u6b22", "color": "#fdf5e6", "spotify_id": "3zUxQpCyUrfEjz6Y07yg4b"}, "track3": {"id": "track3", "title": "MILLION PLACES", "artist": "XG", "image": "images/cover3.jpg", "spotify_link": "https://open.spotify.com/track/4HJNGbmQomaeZoh6aOYDIT?si=7e6fc9bd081e453e", "intro": "\u5f88\u597d\u7684R&B K\u6ce1\uff01\u56e2\u91cc\u53bb\u5e74\u51fa\u4e86\u4e00\u4e2aFTM\uff0c\u559c\u6b22\u8fd9\u79cdinclusive\u52c7\u6562\u4e0d\u7f81\u7684\u7231\u8c46\uff08\u6765\u652f\u6301\u4e86.jpg)", "color": "#fdf5e6", "spotify_id": "4HJNGbmQomaeZoh6aOYDIT"}, "track4": {"id": "track4", "title": "Good Morning", "artist": "Katseye", "image": "images/cover4.jpg", "spotify_link": "https://open.spotify.com/track/6RyJt2SvLFghIDe1eCviD9?si=fdc8f91eaeed4589", "intro": "\u7eff\u8c46\u560e\u560e\u5c11\u6709\u7684Jazz\u66f2\uff0c\u71ac\u591c\u4e86\u5fc5\u542c\u53ef\u4ee5\u6253\u9e21\u8840\uff08\uff1f\uff09\u80a5\u80a0positive\u7684\u5c0f\u66f2\u513f", "color": "#fdf5e6", "spotify_id": "6RyJt2SvLFghIDe1eCviD9"}, "track5": {"id": "track5", "title": "For Good", "artist": "Katseye", "image": "images/cover5.jpg", "spotify_link": "https://open.spotify.com/track/6Axf4FwBQvgcKzRwfm458N?si=84fdc12f82fd4503", "intro": "\u53c8\u628a\u9b54\u6cd5\u574f\u5973\u5deb\u7aef\u4e0a\u6765\u4e86\uff01\u5531\u5f97\u597d\u7f8e\u542c\u5b8c\u773c\u775b\u8885\u8885\u60f9...\u8fd9\u9996\u5347\u534e\u53cb\u60c5\u7684\u66f2\u5b50\u732e\u7ed9\u6700\u597d\u7684besti!", "color": "#fdf5e6", "spotify_id": "6Axf4FwBQvgcKzRwfm458N"}, "track6": {"id": "track6", "title": "Usagi no hikari", "artist": "Katseye", "image": "images/cover6.jpg", "spotify_link": "https://open.spotify.com/track/7suIORUY3mQuGQrBPWPlu3?si=7692df8fa71f4608", "intro": "\u53bb\u5e74\u770b\u7535\u89c6\u5267\u300a\u6211\u4eec\u7ec8\u8981\u4e0a\u5b87\u5b99\u300b\uff08\u8bb2\u56db\u4e2a\u5973\u751f\u572810\u591a\u5e74\u540e\u91cd\u9022\uff0c\u4e3a\u4e86\u5b9e\u73b0\u9ad8\u4e2d\u7684\u68a6\u60f3\uff0c\u4e00\u8d77\u9001\u536b\u661f\u4e0a\u5929\u7684\u6545\u4e8b\uff5e\uff09\u7684\u7247\u5c3e\u66f2!  \u53ef\u60dcSpotify\u6ca1\u6709\u6b4c\u8bcd555\u53ef\u4ee5\u770b\u4e00\u4e0b\u7b2c\u4e00\u96c6\uff0c\u6700\u540e\u6c49\u5316\u7ec4\u6709\u7ffb\u8bd1\u6b4c\u8bcd\uff5e\uff08\u53c8\u5728\u901a\u8fc7\u5947\u602a\u7684\u65b9\u5f0f\u5356\u5b89\u5229\uff09", "color": "#fdf5e6", "spotify_id": "7suIORUY3mQuGQrBPWPlu3"}, "track7": {"id": "track7", "title": "Kaiju", "artist": "Katseye", "image": "images/cover7.jpg", "spotify_link": "https://open.spotify.com/track/7sMRDjjwsB7wQEBOkdfg0i?si=399f6481fb074ae8", "intro": "\u8fd9\u4e2a\u4e50\u961f\u7684\u77e5\u540d\u66f2\u662f\u65b0\u5b9d\u5c9b\uff08iykyk\uff09\uff0c\u4e50\u961f\u4e3b\u5531\u60a3\u4e86\u6291\u90c1\u75c7\uff0c\u8fd9\u662f\u548c\u75c5\u6597\u4e89\u4e09\u5e74\u540e\u590d\u51fa\u5199\u4e0b\u7684\u66f2\u5b50\uff0c\u611f\u89c9\u7279\u522b\u6709\u529b\u91cf\u542c\u4e86\u6d51\u8eab\u662f\u52b2....\u6b4c\u66f2\u4e5f\u662f\u300a\u5730\u00b7\u5173\u4e8e\u5730\u7403\u7684\u8fd0\u52a8\u300b\u8fd9\u4e2a\u4f5c\u54c1\u7684\u4e3b\u9898\u66f2\uff0c\u597d\u770b\ud83d\udc4d", "color": "#fdf5e6", "spotify_id": "7sMRDjjwsB7wQEBOkdfg0i"}, "track8": {"id": "track8", "title": "My Body", "artist": "Katseye", "image": "images/cover8.jpg", "spotify_link": "https://open.spotify.com/track/4tQPrEh1GZYlSLDx5gLtxs?si=60055e86be5a4961", "intro": "2025\u7206\u706b\u5973\u56e2HANA\uff0c\u8fd9\u9996\u6709MV\u5594\u5fc5\u770b\uff0c\u4e03\u5973\u795e\u5531\u8df3\u4ff1\u4f73\uff01\u613f\u6211\u4eec\u90fd\u80fd\u4e00\u76f4\u4fdd\u6301\u4e3b\u4f53\u6027\u597d\u597d\u7231\u8001\u5df1\u2728", "color": "#fdf5e6", "spotify_id": "4tQPrEh1GZYlSLDx5gLtxs"}, "track9": {"id": "track9", "title": "ExtraL (feat. Doechii)", "artist": "Katseye", "image": "images/cover9.jpg", "spotify_link": "https://open.spotify.com/track/4EIFwndJvGpgFjsEbNuYif?si=c3d63e860b2f4a48", "intro": "\u6b4c\u8bcd\u548c\u542c\u611f\u90fd\u5f88\u723d\u7684\u4e00\u9996\uff01\u6700\u540e\u795dTT\u5973\u738b2026\u65e0\u60e7\u56f0\u96be\u5927Slay\u7279Slay!!\ud83c\udf86", "color": "#fdf5e6", "spotify_id": "4EIFwndJvGpgFjsEbNuYif"}};
+
+        function playTrack(event, trackId) {
+            event.stopPropagation(); 
+            const track = tracks[trackId];
+            
+            introEl.innerText = track.intro;
+            playerOverlay.style.backgroundColor = track.color;
+            
+            // Fixed the inner curly braces for JS template literal using double braces for Python
+            const embedUrl = `https://open.spotify.com/embed/track/${track.spotify_id}?utm_source=generator&theme=0`;
+            spotifyIframe.src = embedUrl;
+
+            playerOverlay.classList.add('active');
+        }
+
+        // Listen for clicks on the body to close the player
+        document.addEventListener('click', (event) => {
+            const isClickInsidePlayer = playerOverlay.contains(event.target);
+            if (playerOverlay.classList.contains('active') && !isClickInsidePlayer) {
+                playerOverlay.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
